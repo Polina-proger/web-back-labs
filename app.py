@@ -52,10 +52,100 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
         <li><a href="/lab1/info">info</a></li>
         <li><a href="/lab1/created">created</a></li>
     </ul>
+
+    <h2>Коды ответов HTTP:</h2>
+    <ul>
+        <li><a href="/lab1/400">400 Bad Request</a></li>
+        <li><a href="/lab1/401">401 Unauthorized</a></li>
+        <li><a href="/lab1/402">402 Payment Required</a></li>
+        <li><a href="/lab1/403">403 Forbidden</a></li>
+        <li><a href="/lab1/405">405 Method Not Allowed</a></li>
+        <li><a href="/lab1/418">418 I'm a teapot</a></li>
+    </ul>
+    
     <a href="/">Назад</a>
 </body>
 </html>"""
 
+@app.route("/lab1/400")
+def bad_request():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>400 Bad Request</h1>
+        <p>Сервер не может обработать запрос из-за клиентской ошибки (неправильный синтаксис, неверный формат и т.д.)</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 400
+
+@app.route("/lab1/401")
+def unauthorized():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>401 Unauthorized</h1>
+        <p>Требуется аутентификация для доступа к ресурсу</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 401
+
+@app.route("/lab1/402")
+def payment_required():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>402 Payment Required</h1>
+        <p>Требуется оплата для доступа к ресурсу (зарезервировано для будущего использования)</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 402
+
+@app.route("/lab1/403")
+def forbidden():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>403 Forbidden</h1>
+        <p>Доступ к запрошенному ресурсу запрещен</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 403
+
+@app.route("/lab1/405")
+def method_not_allowed():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>405 Method Not Allowed</h1>
+        <p>Метод запроса не поддерживается для данного ресурса</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 405
+
+@app.route("/lab1/418")
+def teapot():
+    return '''
+<!doctype html>
+<html>
+    <body>
+        <h1>418 I'm a teapot</h1>
+        <p>Я - чайник (шутливый код из RFC 2324)</p>
+        <a href="/lab1">Назад</a>
+    </body>
+</html>
+''', 418
+
+# Остальной код остается без изменений...
 @app.route("/lab1/web")
 def web():
     return """<!doctype html>
