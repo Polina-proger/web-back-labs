@@ -145,7 +145,6 @@ def teapot():
 </html>
 ''', 418
 
-# Остальной код остается без изменений...
 @app.route("/lab1/web")
 def web():
     return """<!doctype html>
@@ -245,4 +244,80 @@ def created():
 
 @app.errorhandler(404)
 def not_found(err):
-    return "нет такой страницы", 404
+    return '''
+<!doctype html>
+<html>
+    <head>
+        <title>Страница не найдена</title>
+        <style>
+            body {
+                background-color: #f8f9fa;
+                color: #343a40;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                padding: 50px;
+                margin: 0;
+            }
+            .error-container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            .error-code {
+                font-size: 72px;
+                font-weight: bold;
+                color: #dc3545;
+                margin-bottom: 20px;
+            }
+            .error-message {
+                font-size: 24px;
+                margin-bottom: 30px;
+                line-height: 1.5;
+            }
+            .error-image {
+                width: 400px;
+                height: 300px;
+                border-radius: 10px;
+                margin: 20px 0;
+                border: 3px solid #dee2e6;
+            }
+            .back-link {
+                display: inline-block;
+                padding: 12px 24px;
+                background-color: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 20px;
+                font-size: 16px;
+                transition: background-color 0.3s;
+            }
+            .back-link:hover {
+                background-color: #0056b3;
+            }
+            .suggestions {
+                margin-top: 30px;
+                font-size: 16px;
+                color: #6c757d;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-container">
+            <div class="error-code">404</div>
+            <div class="error-message">
+                Упс! Похоже, эта страница отправилась в космическое путешествие<br>
+                и не вернулась обратно
+            </div>
+            <img src="/static/404.jpg" alt="Страница не найдена" class="error-image">
+            <div class="suggestions">
+                <p>Возможно, вы искали одну из этих страниц:</p>
+                <a href="/" class="back-link">Главная страница</a>
+                <a href="/lab1" class="back-link" style="margin-left: 10px;">Лабораторная 1</a>
+            </div>
+        </div>
+    </body>
+</html>
+''', 404
+
+if __name__ == '__main__':
+    app.run(debug=True)
