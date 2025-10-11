@@ -37,6 +37,13 @@ def lab1():
 </head>
 <body>
     <h1>Лабораторная работа 1</h1>
+    <p>Flask — фреймворк для создания веб-приложений на языке
+программирования Python, использующий набор инструментов
+Werkzeug, а также шаблонизатор Jinja2. Относится к категории так
+называемых микрофреймворков — минималистичных каркасов
+веб-приложений, сознательно предоставляющих лишь самые ба-
+зовые возможности.</p>
+    
     <ul>
         <li><a href="/lab1/web">web</a></li>
         <li><a href="/lab1/author">author</a></li>
@@ -59,7 +66,7 @@ def web():
          </body>
         </html>""", 200, {
             'X-Server': 'sample',
-            'Content-Type': 'text/plain: charset=utf-8'
+            'Content-Type': 'text/plain; charset=utf-8'
         }
 
 @app.route("/lab1/author")
