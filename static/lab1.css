@@ -1,0 +1,15 @@
+body {
+    background-color: #1a1a2e;
+    color: #e6e6e6;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+}
+
+.styled-image {
+    width: 500px;
+    height: 350px;
+    border: 3px solid #4cc9f0;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.3);
+}

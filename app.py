@@ -33,13 +33,18 @@ def author():
 
 @app.route("/image")
 def image():
-    path = url_for("static", filename="oak.jpg")
-    return '''
+    css_url = url_for('static', filename='lab1.css')
+    img_url = url_for('static', filename='oak.jpg')
+    return f'''
 <!doctype html>
 <html>
+    <head>
+        <title>Стилизованная картинка</title>
+        <link rel="stylesheet" href="{css_url}">
+    </head>
     <body>
-        <h1>Дуб</h1>
-        <img src="''' + path + '''">
+        <h1>Стилизованный дуб</h1>
+        <img src="{img_url}" alt="Дуб" class="styled-image">
     </body>
 </html> 
 '''
