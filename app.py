@@ -51,6 +51,7 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
         <li><a href="/lab1/counter">counter</a></li>
         <li><a href="/lab1/info">info</a></li>
         <li><a href="/lab1/created">created</a></li>
+        <li><a href="/lab1/error">error (вызвать ошибку 500)</a></li>
     </ul>
 
     <h2>Коды ответов HTTP:</h2>
@@ -66,6 +67,13 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
     <a href="/">Назад</a>
 </body>
 </html>"""
+
+# Обработчик, вызывающий ошибку 500
+@app.route("/lab1/error")
+def server_error():
+    # Вызываем ошибку деления на ноль
+    result = 10 / 0
+    return "Эта строка никогда не выполнится"
 
 @app.route("/lab1/400")
 def bad_request():
@@ -242,66 +250,51 @@ def created():
 </html>     
 ''', 201
 
+# Обработчик ошибки 500
+@app.errorhandler(500)
+def internal_server_error(err):
+    css_url = url_for('static', filename='lab1.css')
+    return f'''
+<!doctype html>
+<html>
+    <head>
+        <title>Ошибка сервера</title>
+        <link rel="stylesheet" href="{css_url}">
+    </head>
+    <body class="error-500-body">
+        <div class="error-container">
+            <div class="error-code">500</div>
+            <div class="error-message">
+                Внутренняя ошибка сервера
+            </div>
+            <div class="error-description">
+                <p><strong>Что случилось?</strong></p>
+                <p>На сервере произошла непредвиденная ошибка. Это может быть вызвано:</p>
+                <ul>
+                    <li>Ошибкой в коде приложения</li>
+                    <li>Проблемами с базой данных</li>
+                    <li>Недостатком ресурсов сервера</li>
+                </ul>
+                <p>Мы уже работаем над устранением проблемы. Пожалуйста, попробуйте позже.</p>
+            </div>
+            <a href="/" class="back-link">Вернуться на главную</a>
+            <a href="/lab1" class="back-link" style="margin-left: 10px;">К лабораторной работе</a>
+        </div>
+    </body>
+</html>
+''', 500
+
 @app.errorhandler(404)
 def not_found(err):
-    return '''
+    css_url = url_for('static', filename='lab1.css')
+    return f'''
 <!doctype html>
 <html>
     <head>
         <title>Страница не найдена</title>
-        <style>
-            body {
-                background-color: #f8f9fa;
-                color: #343a40;
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 50px;
-                margin: 0;
-            }
-            .error-container {
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            .error-code {
-                font-size: 72px;
-                font-weight: bold;
-                color: #dc3545;
-                margin-bottom: 20px;
-            }
-            .error-message {
-                font-size: 24px;
-                margin-bottom: 30px;
-                line-height: 1.5;
-            }
-            .error-image {
-                width: 400px;
-                height: 300px;
-                border-radius: 10px;
-                margin: 20px 0;
-                border: 3px solid #dee2e6;
-            }
-            .back-link {
-                display: inline-block;
-                padding: 12px 24px;
-                background-color: #007bff;
-                color: white;
-                text-decoration: none;
-                border-radius: 5px;
-                margin-top: 20px;
-                font-size: 16px;
-                transition: background-color 0.3s;
-            }
-            .back-link:hover {
-                background-color: #0056b3;
-            }
-            .suggestions {
-                margin-top: 30px;
-                font-size: 16px;
-                color: #6c757d;
-            }
-        </style>
+        <link rel="stylesheet" href="{css_url}">
     </head>
-    <body>
+    <body class="error-404-body">
         <div class="error-container">
             <div class="error-code">404</div>
             <div class="error-message">
@@ -320,4 +313,5 @@ def not_found(err):
 ''', 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
+    
