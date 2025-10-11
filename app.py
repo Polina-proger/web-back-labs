@@ -63,6 +63,27 @@ Werkzeug, а также шаблонизатор Jinja2. Относится к �
         <li><a href="/lab1/405">405 Method Not Allowed</a></li>
         <li><a href="/lab1/418">418 I'm a teapot</a></li>
     </ul>
+
+    <h2>Список роутов</h2>
+    <ul>
+        <li><a href="/">/</a></li>
+        <li><a href="/index">/index</a></li>
+        <li><a href="/lab1">/lab1</a></li>
+        <li><a href="/lab1/web">/lab1/web</a></li>
+        <li><a href="/lab1/author">/lab1/author</a></li>
+        <li><a href="/lab1/image">/lab1/image</a></li>
+        <li><a href="/lab1/counter">/lab1/counter</a></li>
+        <li><a href="/lab1/clear_counter">/lab1/clear_counter</a></li>
+        <li><a href="/lab1/info">/lab1/info</a></li>
+        <li><a href="/lab1/created">/lab1/created</a></li>
+        <li><a href="/lab1/error">/lab1/error</a></li>
+        <li><a href="/lab1/400">/lab1/400</a></li>
+        <li><a href="/lab1/401">/lab1/401</a></li>
+        <li><a href="/lab1/402">/lab1/402</a></li>
+        <li><a href="/lab1/403">/lab1/403</a></li>
+        <li><a href="/lab1/405">/lab1/405</a></li>
+        <li><a href="/lab1/418">/lab1/418</a></li>
+    </ul>
     
     <a href="/">Назад</a>
 </body>
@@ -200,7 +221,12 @@ def image():
         <a href="/lab1">Назад</a>
     </body>
 </html> 
-'''
+''', 200, {
+    'Content-Language': 'ru',
+    'X-Student-Name': 'Selikhova Polina',
+    'X-Lab-Number': '1',
+    'X-Custom-Header': 'Flask-Image-Processor'
+}
 
 count = 0
 
@@ -314,4 +340,3 @@ def not_found(err):
 
 if __name__ == '__main__':
     app.run(debug=False)
-    
