@@ -1,6 +1,10 @@
 from flask import Flask, url_for, request, redirect
 import datetime
+
 app = Flask(__name__)
+
+# Глобальный список для хранения логов
+access_log = []
 
 @app.route("/")
 @app.route("/index")
@@ -310,15 +314,66 @@ def internal_server_error(err):
 </html>
 ''', 500
 
+# Обновленный обработчик ошибки 404
 @app.errorhandler(404)
 def not_found(err):
+    # Получаем информацию о текущем запросе
+    client_ip = request.remote_addr
+    access_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    requested_url = request.url
+    
+    # Добавляем запись в лог
+    log_entry = {
+        'ip': client_ip,
+        'time': access_time,
+        'url': requested_url
+    }
+    access_log.append(log_entry)
+    
     css_url = url_for('static', filename='lab1.css')
+    
+    # Формируем HTML для журнала
+    log_html = ""
+    for entry in access_log:
+        log_html += f'<li>[{entry["time"]}, пользователь {entry["ip"]}] зашёл на адрес: <br>{entry["url"]}</li>'
+    
     return f'''
 <!doctype html>
 <html>
     <head>
         <title>Страница не найдена</title>
         <link rel="stylesheet" href="{css_url}">
+        <style>
+            .access-info {{
+                background-color: #e9ecef;
+                padding: 15px;
+                border-radius: 5px;
+                margin: 20px 0;
+            }}
+            .journal {{
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 5px;
+                padding: 20px;
+                margin-top: 30px;
+            }}
+            .journal h3 {{
+                color: #495057;
+                border-bottom: 2px solid #007bff;
+                padding-bottom: 10px;
+            }}
+            .journal ul {{
+                list-style-type: none;
+                padding-left: 0;
+            }}
+            .journal li {{
+                padding: 8px 0;
+                border-bottom: 1px solid #e9ecef;
+            }}
+            .journal li:last-child {{
+                border-bottom: none;
+            }}
+        </style>
     </head>
     <body class="error-404-body">
         <div class="error-container">
@@ -327,11 +382,27 @@ def not_found(err):
                 Упс! Похоже, эта страница отправилась в космическое путешествие<br>
                 и не вернулась обратно
             </div>
+            
+            <div class="access-info">
+                <h3>Информация о вашем запросе:</h3>
+                <p><strong>Ваш IP-адрес:</strong> {client_ip}</p>
+                <p><strong>Дата и время доступа:</strong> {access_time}</p>
+                <p><strong>Запрошенный адрес:</strong> {requested_url}</p>
+            </div>
+            
             <img src="/static/404.jpg" alt="Страница не найдена" class="error-image">
+            
             <div class="suggestions">
                 <p>Возможно, вы искали одну из этих страниц:</p>
                 <a href="/" class="back-link">Главная страница</a>
                 <a href="/lab1" class="back-link" style="margin-left: 10px;">Лабораторная 1</a>
+            </div>
+            
+            <div class="journal">
+                <h3>📋 Журнал обращений к несуществующим страницам:</h3>
+                <ul>
+                    {log_html}
+                </ul>
             </div>
         </div>
     </body>
@@ -340,3 +411,4 @@ def not_found(err):
 
 if __name__ == '__main__':
     app.run(debug=False)
+    
