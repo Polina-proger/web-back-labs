@@ -1,0 +1,39 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f0ff;
+    color: #5a4a6a;
+    line-height: 1.6;
+}
+
+main {
+    margin-bottom: 40px;
+    padding: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #e3d0ff;
+    text-align: center;
+}
+
+footer {
+    padding: 10px 20px;
+    background: #d4c1ec;
+    text-align: right;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+p {
+    margin: 10px 0;
+    padding: 8px;
+}
