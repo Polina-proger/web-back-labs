@@ -3,12 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Селихова Полина. Лабораторная работа {{ n_lab }}</title>
+    <title>
+        {% if name %}
+            {{ name }}
+        {% else %}
+            Анонимус
+        {% endif %}
+        . Лабораторная работа 
+        {% if n_lab %}
+            {{ n_lab }}
+        {% else %}
+            ?
+        {% endif %}
+    </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
     <header>
-        WEB-программирование, часть 2. Лабораторная работа {{ n_lab }}
+        WEB-программирование, часть 2. 
+        {% if n_lab %}
+            Лабораторная работа {{ n_lab }}
+        {% endif %}
     </header>
 
     <main>
@@ -20,7 +35,26 @@
     </main>
 
     <footer>
-        &copy; {{ name }}, {{ group }}, {{ n_course }}, 2025
+        &copy; 
+        {% if name %}
+            {{ name }}, 
+        {% else %}
+            Анонимус,
+        {% endif %}
+        
+        {% if group %}
+            {{ group }}, 
+        {% else %}
+            Группа не указана,
+        {% endif %}
+        
+        {% if n_course %}
+            {{ n_course }}, 
+        {% else %}
+            Курс не указан,
+        {% endif %}
+        
+        2025
     </footer>
 </body>
 </html>
