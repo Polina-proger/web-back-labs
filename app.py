@@ -419,8 +419,12 @@ def a2():
 
 flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
 
+@app.route('/lab2/add_flower/')
 @app.route('/lab2/add_flower/<name>')
-def add_flower(name):
+def add_flower(name=None):
+    if name is None:
+        return 'вы не задали имя цветка', 400
+    
     flower_list.append(name)
     return f'''
 <!doctype html>
@@ -433,6 +437,22 @@ def add_flower(name):
     </body>
  </html>   
 '''
+
+@app.route('/lab2/flowers')
+def show_flowers():
+    return f'''
+<!doctype html>
+<html>
+    <body>
+    <h1>Список цветов</h1>
+    <p>Всего цветов: {len(flower_list)}</p>
+    <ul>
+        {"".join(f"<li>{flower}</li>" for flower in flower_list)}
+    </ul>
+    </body>
+</html>
+'''
+
 @app.route('/lab2/example')
 def example():
     name, n_lab, group, n_course = 'Селихова Полина', '2', 'ФБИ-33', '3 курс'
@@ -447,6 +467,51 @@ def example():
                            n_lab=n_lab, group=group, 
                            n_course=n_course, fruits=fruits)
 
-@app.route('/lab2')
+@app.route('/lab2/')
 def lab2():
     return render_template('lab2.html')
+
+@app.route('/lab2/filters')
+def filters():
+    phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
+    return render_template('filter.html', phrase=phrase)
+
+@app.route('/lab2/flowers/<int:flower_id>')
+def show_flower(flower_id):
+    if flower_id < 0 or flower_id >= len(flower_list):
+                return f'''
+<!doctype html>
+<html>
+    <body>
+    <h1>Ошибка</h1>
+    <p><a>Цветок с ID {flower_id} не найден</a></p>
+    <p><a href="/lab2/flowers">Вернуться к списку всех цветов</a></p>
+    </body>
+</html>
+''', 404
+    
+    return f'''
+<!doctype html>
+<html>
+    <body>
+    <h1>Информация о цветке</h1>
+    <p>ID: {flower_id}</p>
+    <p>: {flower_list[flower_id]}</p>
+    <p><a href="/lab2/flowers">Вернуться к списку всех цветов</a></p>
+    </body>
+</html>
+'''
+
+@app.route('/lab2/clear_flowers')
+def clear_flowers():
+    flower_list.clear()
+    return '''
+<!doctype html>
+<html>
+    <body>
+    <h1>Список цветов очищен</h1>
+    <p>Все цветы были удалены из списка</p>
+    <p><a href="/lab2/flowers">Перейти к списку всех цветов</a></p>
+    </body>
+</html>
+'''
