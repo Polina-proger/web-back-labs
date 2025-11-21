@@ -10,7 +10,7 @@
             {% for flower in flower_list %}
                 <li>
                     {{ flower.name }} - {{ flower.price }} руб - 
-                    <a href="{{ url_for('del_flower', flower_id=loop.index0) }}">удалить</a>
+                    <a href="{{ url_for('lab2.del_flower', flower_id=loop.index0) }}">удалить</a>
                 </li>
             {% endfor %}
         </ol>
@@ -18,10 +18,10 @@
         <p>Цветов пока нет</p>
     {% endif %}
 
-    <p><strong><a href="{{ url_for('clear_flowers') }}">Удалить все цветы</a></strong></p>
+    <p><strong><a href="{{ url_for('lab2.clear_flowers') }}">Удалить все цветы</a></strong></p>
 
     <h2>Добавить новый цветок</h2>
-    <form action="{{ url_for('add_flower') }}" method="get">
+    <form action="{{ url_for('lab2.add_flower') }}" method="get">
         <table>
             <tr>
                 <td>Добавить цветок:</td>
@@ -31,5 +31,5 @@
         </table>
     </form>
 
-    <p><a href="{{ url_for('lab2') }}">Назад к списку страниц лабораторной</a></p>
+    <p><a href="{{ url_for('lab2.lab2_page') }}">Назад к списку страниц лабораторной</a></p>
 {% endblock %}
