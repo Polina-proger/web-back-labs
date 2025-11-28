@@ -161,8 +161,7 @@ def ticket():
                              destination=destination,
                              travel_date=travel_date,
                              insurance=insurance,
-                             price=price,
-                             show_result=True)
+                             price=price)
     
     return render_template('lab3/ticket.html')
 
@@ -173,3 +172,96 @@ def clear_settings():
     resp.delete_cookie('bg_color') 
     resp.delete_cookie('font_size')
     return resp
+
+books = [
+    {"title": "Токийский гуль", "price": 1500, "year": 2011, "author": "Сюи Исида"},
+    {"title": "Атака титанов", "price": 1800, "year": 2009, "author": "Хадзимэ Исаяма"},
+    {"title": "Наруто", "price": 1200, "year": 1999, "author": "Масаси Кисимото"},
+    {"title": "Ван Пис", "price": 1400, "year": 1997, "author": "Эйитиро Ода"},
+    {"title": "Блич", "price": 1100, "year": 2001, "author": "Тайто Кубо"},
+    {"title": "Хантер х Хантер", "price": 950, "year": 1998, "author": "Ёсихиро Тогаси"},
+    {"title": "Моб Психо 100", "price": 850, "year": 2012, "author": "ONE"},
+    {"title": "Ванпанчмен", "price": 1000, "year": 2009, "author": "ONE"},
+    {"title": "Джоджо: Невероятные приключения", "price": 1300, "year": 1987, "author": "Хирохико Араки"},
+    {"title": "Евангелион", "price": 900, "year": 1995, "author": "Ёсиюки Садамото"},
+    {"title": "Берсерк", "price": 1600, "year": 1989, "author": "Кэнтаро Миура"},
+    {"title": "Стальной алхимик", "price": 1250, "year": 2001, "author": "Хирому Аракава"},
+    {"title": "Драгонболл", "price": 1150, "year": 1984, "author": "Акира Торияма"},
+    {"title": "Сейлор Мун", "price": 1350, "year": 1991, "author": "Наоко Такэути"},
+    {"title": "Ковбой Бибоп", "price": 1050, "year": 1997, "author": "Ясухиро Найто"},
+    {"title": "Тетрадь смерти", "price": 1450, "year": 2003, "author": "Цугуми Оба"},
+    {"title": "Бакуман", "price": 950, "year": 2008, "author": "Цугуми Оба"},
+    {"title": "Город, в котором меня нет", "price": 800, "year": 2012, "author": "Кэй Санабэ"},
+    {"title": "Паразит", "price": 750, "year": 1988, "author": "Хитоси Ивааки"},
+    {"title": "Акира", "price": 1700, "year": 1982, "author": "Кацухиро Отомо"},
+    {"title": "Призрак в доспехах", "price": 1550, "year": 1989, "author": "Масамунэ Сиро"},
+    {"title": "О моём перерождении в слизь", "price": 1100, "year": 2013, "author": "Фусэ"},
+    {"title": "Восхождение героя щита", "price": 1200, "year": 2013, "author": "Анэко Юсаги"}
+]
+
+@lab3.route('/lab3/manga')
+def manga():
+    min_price_cookie = request.cookies.get('min_price', '')
+    max_price_cookie = request.cookies.get('max_price', '')
+    
+    min_price_arg = request.args.get('min_price', min_price_cookie)
+    max_price_arg = request.args.get('max_price', max_price_cookie)
+    reset = request.args.get('reset')
+    
+    if reset:
+        resp = make_response(redirect('/lab3/manga'))
+        resp.delete_cookie('min_price')
+        resp.delete_cookie('max_price')
+        return resp
+    
+    min_price_all = min(book['price'] for book in books)
+    max_price_all = max(book['price'] for book in books)
+    
+    filtered_books = books
+    message = ""
+    
+    if min_price_arg or max_price_arg:
+        try:
+            min_price = int(min_price_arg) if min_price_arg else min_price_all
+            max_price = int(max_price_arg) if max_price_arg else max_price_all
+            
+            if min_price > max_price:
+                min_price, max_price = max_price, min_price
+            
+            filtered_books = [
+                book for book in books
+                if min_price <= book['price'] <= max_price
+            ]
+            
+            count = len(filtered_books)
+            if count == 0:
+                message = "Не найдено ни одной манги в заданном диапазоне цен"
+            else:
+                message = f"Найдено манги: {count}"
+                
+            if min_price_arg or max_price_arg:
+                resp = make_response(render_template('lab3/manga.html',
+                    books=filtered_books,
+                    min_price=min_price,
+                    max_price=max_price,
+                    min_price_all=min_price_all,
+                    max_price_all=max_price_all,
+                    message=message
+                ))
+                if min_price_arg:
+                    resp.set_cookie('min_price', min_price_arg)
+                if max_price_arg:
+                    resp.set_cookie('max_price', max_price_arg)
+                return resp
+                
+        except ValueError:
+            message = "Ошибка: введите корректные числовые значения"
+    
+    return render_template('lab3/manga.html',
+        books=filtered_books,
+        min_price=min_price_arg,
+        max_price=max_price_arg,
+        min_price_all=min_price_all,
+        max_price_all=max_price_all,
+        message=message or f"Всего манги: {len(filtered_books)}"
+    )
