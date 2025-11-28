@@ -41,7 +41,7 @@ def start():
 
 @app.errorhandler(500)
 def internal_server_error(err):
-    css_url = url_for('static', filename='lab1.css')
+    css_url = url_for('static', filename='lab1/lab1.css')
     return f'''
 <!doctype html>
 <html>
@@ -86,7 +86,7 @@ def not_found(err):
     }
     access_log.append(log_entry)
     
-    css_url = url_for('static', filename='lab1.css')
+    css_url = url_for('static', filename='lab1/lab1.css')
     
     log_html = ""
     for entry in access_log:
@@ -145,7 +145,7 @@ def not_found(err):
                 <p><strong>Запрошенный адрес:</strong> {requested_url}</p>
             </div>
             
-            <img src="/static/404.jpg" alt="Страница не найдена" class="error-image">
+            <img src="lab1/static/404.jpg" alt="Страница не найдена" class="error-image">
             
             <div class="suggestions">
                 <p>Возможно, вы искали одну из этих страниц:</p>

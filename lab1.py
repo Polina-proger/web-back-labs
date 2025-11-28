@@ -217,8 +217,8 @@ def author():
 
 @lab1.route("/lab1/image")
 def image():
-    css_url = url_for('static', filename='lab1.css')
-    img_url = url_for('static', filename='oak.jpg')
+    css_url = url_for('static', filename='lab1/lab1.css')
+    img_url = url_for('static', filename='lab1/oak.jpg')
     return f'''
 <!doctype html>
 <html>

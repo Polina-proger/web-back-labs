@@ -27,7 +27,7 @@ def del_flower(flower_id):
         abort(404)
     
     flower_list.pop(flower_id)
-    return redirect(url_for('lab2.show_flowers'))  # Исправлено
+    return redirect(url_for('lab2.show_flowers'))  
 
 
 @lab2.route('/lab2/add_flower/')
@@ -52,7 +52,7 @@ def add_flower(name=None):
 
 @lab2.route('/lab2/flowers')
 def show_flowers():
-    return render_template('flowers.html', flower_list=flower_list)
+    return render_template('lab2/flowers.html', flower_list=flower_list)
 
 
 @lab2.route('/lab2/example')
@@ -65,7 +65,7 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
     ]
-    return render_template('example.html', name=name, 
+    return render_template('lab2/example.html', name=name, 
                            n_lab=n_lab, group=group, 
                            n_course=n_course, fruits=fruits)
 
@@ -78,7 +78,7 @@ def lab2_page():
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase=phrase)
+    return render_template('lab2/filter.html', phrase=phrase)
 
 
 @lab2.route('/lab2/flowers/<int:flower_id>')
@@ -113,7 +113,7 @@ def show_flower(flower_id):
 @lab2.route('/lab2/clear_flowers')
 def clear_flowers():
     flower_list.clear()
-    return redirect(url_for('lab2.show_flowers'))  # Исправлено
+    return redirect(url_for('lab2.show_flowers')) 
 
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
@@ -159,7 +159,7 @@ books = [
 
 @lab2.route('/lab2/books')
 def lab2_books():
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 berries = [
     {"name": "Клубника", "description": "Сладкая красная ягода", "image": "Клубника.jpg"},
@@ -190,7 +190,7 @@ def show_berries():
     for berry in berries:  
         berries_html += f'''
         <div class="berry-item">
-            <img src="/static/{berry['image']}" alt="{berry['name']}" style="width: 150px; height: 150px; object-fit: cover;">
+            <img src="/static/lab2/{berry['image']}" alt="{berry['name']}" style="width: 150px; height: 150px; object-fit: cover;">
             <h3>{berry['name']}</h3>
             <p>{berry['description']}</p>
         </div>
