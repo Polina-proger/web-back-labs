@@ -87,6 +87,7 @@ def not_found(err):
     access_log.append(log_entry)
     
     css_url = url_for('static', filename='lab1/lab1.css')
+    image_url = url_for('static', filename='lab1/404.jpg')
     
     log_html = ""
     for entry in access_log:
@@ -145,7 +146,7 @@ def not_found(err):
                 <p><strong>Запрошенный адрес:</strong> {requested_url}</p>
             </div>
             
-            <img src="lab1/static/404.jpg" alt="Страница не найдена" class="error-image">
+            <img src="{image_url}" alt="Страница не найдена" class="error-image">
             
             <div class="suggestions">
                 <p>Возможно, вы искали одну из этих страниц:</p>
