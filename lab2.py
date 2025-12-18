@@ -72,7 +72,7 @@ def example():
 
 @lab2.route('/lab2/')
 def lab2_page():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
