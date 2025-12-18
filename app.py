@@ -1,24 +1,24 @@
-from flask import Flask, url_for, request, redirect, abort, render_template
+from flask import Flask, url_for, request, redirect, abort, render_template, render_template_string
 import datetime
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
+from lab4 import lab4
 
 app = Flask(__name__)
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
-# Глобальный список для хранения логов
-access_log = []
+app.register_blueprint(lab4)
 
 @app.route("/")
 def start():
-    return """<!doctype html>
-<html>
-<head>
-    <title>НГТУ, ФБ, Лабораторные работы</title>
-</head>
-<body>
+    html_content = """
+{% extends "base.html" %}
+
+{% block lab %}Главная страница{% endblock %}
+
+{% block main %}
     <header>
         <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
     </header>
@@ -28,6 +28,7 @@ def start():
             <li><a href="/lab1">Первая лабораторная</a></li>
             <li><a href="/lab2/">Вторая лабораторная</a></li>
             <li><a href="/lab3/">Третья лабораторная</a></li>
+            <li><a href="/lab4/">Четвертая лабораторная</a></li>
         </ul>
     </main>
     
@@ -35,8 +36,9 @@ def start():
         <hr>
         <p>Селихова Полина Сергеевна, ФБИ-33, 3 курс, 2025</p>
     </footer>
-</body>
-</html>"""
+{% endblock %}
+    """
+    return render_template_string(html_content)
 
 
 @app.errorhandler(500)
