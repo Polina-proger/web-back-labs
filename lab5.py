@@ -89,7 +89,7 @@ def register():
         db_close(conn, cur)
         return render_template('lab5/register.html', error="Такой пользователь уже существует")
     
-    password_hash = generate_password_hash(password)
+    password_hash = generate_password_hash(password, method='pbkdf2:sha256')
     
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("INSERT INTO users (login, password, full_name) VALUES (%s, %s, %s);", (login, password_hash, full_name))
@@ -127,10 +127,10 @@ def create():
     user_id = user["id"]
 
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (%s, %s, %s, %s, %s);", 
+        cur.execute("INSERT INTO articles(login_id, title, article_text, is_favorite, is_public) VALUES (%s, %s, %s, %s, %s);", 
                     (user_id, title, article_text, is_favorite, is_public))
     else:
-        cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
+        cur.execute("INSERT INTO articles(login_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
                     (user_id, title, article_text, is_favorite, is_public))
 
     db_close(conn, cur)
@@ -155,16 +155,16 @@ def list_articles():
             cur.execute("""
                 SELECT a.id, a.title, a.article_text, a.is_favorite, a.is_public, u.login as author 
                 FROM articles a 
-                JOIN users u ON a.user_id = u.id 
-                WHERE a.user_id = %s OR a.is_public = true 
+                JOIN users u ON a.login_id = u.id 
+                WHERE a.login_id = %s OR a.is_public = true 
                 ORDER BY a.is_favorite DESC, a.id DESC;
             """, (user_id,))
         else:
             cur.execute("""
                 SELECT a.id, a.title, a.article_text, a.is_favorite, a.is_public, u.login as author 
                 FROM articles a 
-                JOIN users u ON a.user_id = u.id 
-                WHERE a.user_id = ? OR a.is_public = 1 
+                JOIN users u ON a.login_id = u.id 
+                WHERE a.login_id = ? OR a.is_public = 1 
                 ORDER BY a.is_favorite DESC, a.id DESC;
             """, (user_id,))
     else:
@@ -172,7 +172,7 @@ def list_articles():
             cur.execute("""
                 SELECT a.id, a.title, a.article_text, a.is_favorite, a.is_public, u.login as author 
                 FROM articles a 
-                JOIN users u ON a.user_id = u.id 
+                JOIN users u ON a.login_id = u.id 
                 WHERE a.is_public = true 
                 ORDER BY a.is_favorite DESC, a.id DESC;
             """)
@@ -180,7 +180,7 @@ def list_articles():
             cur.execute("""
                 SELECT a.id, a.title, a.article_text, a.is_favorite, a.is_public, u.login as author 
                 FROM articles a 
-                JOIN users u ON a.user_id = u.id 
+                JOIN users u ON a.login_id = u.id 
                 WHERE a.is_public = 1 
                 ORDER BY a.is_favorite DESC, a.id DESC;
             """)
@@ -207,9 +207,9 @@ def edit_article(article_id):
 
     if request.method == 'GET':
         if current_app.config['DB_TYPE'] == 'postgres':
-            cur.execute("SELECT id, title, article_text, is_favorite, is_public FROM articles WHERE id=%s AND user_id=%s;", (article_id, user_id))
+            cur.execute("SELECT id, title, article_text, is_favorite, is_public FROM articles WHERE id=%s AND login_id=%s;", (article_id, user_id))
         else:
-            cur.execute("SELECT id, title, article_text, is_favorite, is_public FROM articles WHERE id=? AND user_id=?;", (article_id, user_id))
+            cur.execute("SELECT id, title, article_text, is_favorite, is_public FROM articles WHERE id=? AND login_id=?;", (article_id, user_id))
         
         article = cur.fetchone()
         db_close(conn, cur)
@@ -229,10 +229,10 @@ def edit_article(article_id):
         return render_template('lab5/edit_article.html', article=article_data, error='Заполните все поля')
 
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("UPDATE articles SET title=%s, article_text=%s, is_favorite=%s, is_public=%s WHERE id=%s AND user_id=%s;", 
+        cur.execute("UPDATE articles SET title=%s, article_text=%s, is_favorite=%s, is_public=%s WHERE id=%s AND login_id=%s;", 
                     (title, article_text, is_favorite, is_public, article_id, user_id))
     else:
-        cur.execute("UPDATE articles SET title=?, article_text=?, is_favorite=?, is_public=? WHERE id=? AND user_id=?;", 
+        cur.execute("UPDATE articles SET title=?, article_text=?, is_favorite=?, is_public=? WHERE id=? AND login_id=?;", 
                     (title, article_text, is_favorite, is_public, article_id, user_id))
     
     db_close(conn, cur)
@@ -255,9 +255,9 @@ def delete_article(article_id):
     user_id = user["id"]
 
     if current_app.config['DB_TYPE'] == 'postgres':
-        cur.execute("DELETE FROM articles WHERE id=%s AND user_id=%s;", (article_id, user_id))
+        cur.execute("DELETE FROM articles WHERE id=%s AND login_id=%s;", (article_id, user_id))
     else:
-        cur.execute("DELETE FROM articles WHERE id=? AND user_id=?;", (article_id, user_id))
+        cur.execute("DELETE FROM articles WHERE id=? AND login_id=?;", (article_id, user_id))
     
     db_close(conn, cur)
     return redirect('/lab5/list')
@@ -309,7 +309,7 @@ def profile():
         return render_template('lab5/profile.html', user=user, error='Пароли не совпадают')
     
     if password:
-        password_hash = generate_password_hash(password)
+        password_hash = generate_password_hash(password, method='pbkdf2:sha256')
         if current_app.config['DB_TYPE'] == 'postgres':
             cur.execute("UPDATE users SET full_name=%s, password=%s WHERE login=%s;", (full_name, password_hash, login))
         else:
