@@ -38,7 +38,7 @@ def register():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT login FROM users WHERE login='{login}';")
+    cur.execute("SELECT login FROM users WHERE login=%s;",(login, ))
     
     if cur.fetchone():
         db_close(conn, cur)
@@ -46,7 +46,7 @@ def register():
                                error="Такой пользователь уже существует")
     
     password_hash = generate_password_hash(password, method='pbkdf2:sha256')
-    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password_hash}');")
+    cur.execute("INSERT INTO users (login, password) VALUES (%s, %s);" (login, password_hash))
     
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
@@ -64,7 +64,7 @@ def login():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT * FROM users WHERE login='{login}';")
+    cur.execute("SELECT * FROM users WHERE login=%s;",(login, ))
 
     user = cur.fetchone()
 
@@ -104,8 +104,8 @@ def create():
     cur.execute("SELECT * FROM users WHERE login=%s;", (login, ))
     login_id = cur.fetchone()["id"]
 
-    cur.execute(f"INSERT INTO articles(login_id, title, article_text) \
-                VALUES ({login_id}, '{title}', '{article_text}');")
+    cur.execute("INSERT INTO articles(login_id, title, article_text) \
+                VALUES (%s, %s);", (login_id, title, article_text))
     
     db_close(conn, cur)
     return redirect('/lab5')
@@ -118,10 +118,10 @@ def list():
     
     conn, cur = db_connect()
 
-    cur.execute(f"SELECT id FROM users WHERE login='{login}';")
+    cur.execute("SELECT id FROM users WHERE login=%s;", (login, ))
     login_id = cur.fetchone()["id"]
 
-    cur.execute(f"SELECT * FROM articles WHERE login_id='{login_id}';")
+    cur.execute("SELECT * FROM articles WHERE login_id=%s;", (login_id, ))
     articles = cur.fetchall()
 
     db_close(conn, cur)
