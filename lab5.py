@@ -103,29 +103,43 @@ def logout():
     session.pop('login', None)
     return render_template('lab5/logout.html')
 
-@lab5.route('/lab5/create', methods=['GET','POST'])
+@lab5.route('/lab5/create', methods=['GET', 'POST'])
 def create():
-    login=session.get('login')
+    login = session.get('login')
     if not login:
-        return redirect('lab5/login')
-
+        return redirect('/lab5/login')
+    
     if request.method == 'GET':
         return render_template('lab5/create_article.html')
-
+    
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_favorite = bool(request.form.get('is_favorite'))
+    is_public = bool(request.form.get('is_public'))
+    
+    if not title or not article_text:
+        return render_template('lab5/create_article.html', error='Заполните все поля')
 
     conn, cur = db_connect()
 
     if current_app.config['DB_TYPE'] == 'postgres':
+        cur.execute("SELECT id FROM users WHERE login=%s;", (login,))
+    else:
+        cur.execute("SELECT id FROM users WHERE login=?;", (login,))
+    
+    user = cur.fetchone()
+    user_id = user["id"]
+
+    if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (%s, %s, %s, %s, %s);", 
-                    (user_id, title, article_text))
+                    (user_id, title, article_text, is_favorite, is_public))
     else:
         cur.execute("INSERT INTO articles(user_id, title, article_text, is_favorite, is_public) VALUES (?, ?, ?, ?, ?);", 
-                    (user_id, title, article_text))
+                    (user_id, title, article_text, is_favorite, is_public))
 
     db_close(conn, cur)
-    return redirect('/lab5')
+    return redirect('/lab5/list')
+
 
 @lab5.route('/lab5/list')
 def list():
