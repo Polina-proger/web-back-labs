@@ -5,8 +5,7 @@
 {% block main %}
     <div class="knowledge-base">
         <h1>База знаний</h1>
-        
-        <!-- Панель навигации -->
+
         <p>
             <a href="/lab5/list">Список статей</a> | 
             {% if login %}
@@ -23,8 +22,7 @@
                 <a href="/lab5/register">Регистрация</a>
             {% endif %}
         </p>
-        
-        <!-- Контент -->
+
         <div>
             {% if login %}
                 <h2>Добро пожаловать, {{ login }}!</h2>

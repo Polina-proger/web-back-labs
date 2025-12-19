@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, url_for, redirect, request, make_response, session
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from werkzeug.security import check_password_hash, generate_password_hash
 lab5 = Blueprint('lab5', __name__)
 
 @lab5.route('/lab5/')
@@ -10,13 +11,13 @@ def lab():
 
 def db_connect():
     conn = psycopg2.connect(
-        host = '127.0.0.1',
-        database = 'polina_selikhova_knowledge_base',
-        user = 'polina_selikhova_knowledge_base',
-        password = 'mypass123'
+        host='127.0.0.1',
+        database='polina_selikhova_knowledge_base',
+        user='polina_selikhova_knowledge_base',
+        password='mypass123'
     )
-    cur = conn.cursor()
 
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     return conn, cur
 
 def db_close(conn,cur):
@@ -24,7 +25,7 @@ def db_close(conn,cur):
     cur.close()
     conn.close()
 
-@lab5.route('/lab5/register', methods = ['GET', 'POST'])
+@lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('lab5/register.html')
@@ -38,21 +39,23 @@ def register():
     conn, cur = db_connect()
 
     cur.execute(f"SELECT login FROM users WHERE login='{login}';")
+    
     if cur.fetchone():
         db_close(conn, cur)
         return render_template('lab5/register.html',
                                error="Такой пользователь уже существует")
     
-    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password}');")
+    password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password_hash}');")
     
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
 
-@lab5.route('/lab5/login', methods = ['GET','POST'])
+@lab5.route('/lab5/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
         return render_template('lab5/login.html')
-
+    
     login = request.form.get('login')
     password = request.form.get('password')
 
@@ -62,6 +65,7 @@ def login():
     conn, cur = db_connect()
 
     cur.execute(f"SELECT * FROM users WHERE login='{login}';")
+
     user = cur.fetchone()
 
     if not user:
@@ -69,7 +73,7 @@ def login():
         return render_template('lab5/login.html',
                                error="Логин и/или пароль неверны")
     
-    if user['password'] != password:
+    if not check_password_hash(user['password'], password):
         db_close(conn, cur)
         return render_template('lab5/login.html',
                                error="Логин и/или пароль неверны")
@@ -77,3 +81,8 @@ def login():
     session['login'] = login
     db_close(conn, cur)
     return render_template('lab5/success_login.html', login=login)
+
+@lab5.route('/lab5/logout')
+def logout():
+    session.pop('login', None)
+    return render_template('lab5/logout.html')
