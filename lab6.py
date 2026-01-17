@@ -10,11 +10,12 @@ lab6 = Blueprint('lab6', __name__)
 
 offices = []
 for i in range(1, 11):
-    offices.append({"number": i, "tenant": ""})
+    offices.append({"number": i, "tenant": "", "price": 900 + i % 3})
 
 @lab6.route('/lab6/')
 def lab():
-    return render_template('lab6/lab6.html')
+    total_price = sum(office['price'] for office in offices if office['tenant'] == session.get('login', ''))
+    return render_template('lab6/lab6.html', total_price=total_price)
 
 @lab6.route('/lab6/json-rpc-api/', methods=['POST'])
 def api():
