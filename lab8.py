@@ -14,9 +14,28 @@ lab8 = Blueprint('lab8', __name__)
 def main():
     return render_template('lab8/lab8.html')
 
-@lab8.route('/lab8/login')
+@lab8.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('lab8/login.html')
+    if request.method == 'GET':
+        return render_template('lab8/login.html')
+    
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
+    remember_me = request.form.get('remember_me') == 'on'
+    
+    if not login_form or not login_form.strip():
+        return render_template('lab8/login.html', error='Введите логин!')
+    if not password_form or not password_form.strip():
+        return render_template('lab8/login.html', error='Введите пароль!')
+    
+    user = User.query.filter_by(login=login_form).first()
+    
+    if user and check_password_hash(user.password, password_form):
+        login_user(user, remember=remember_me)
+        return redirect('/lab8/')
+    
+    return render_template('lab8/login.html', error='Ошибка входа: логин и/или пароль неверны')
+
 
 @lab8.route('/register', methods=['GET', 'POST'])
 def register():
