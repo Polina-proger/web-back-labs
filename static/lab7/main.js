@@ -10,17 +10,29 @@ function fillFilmList() {
         for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitle = document.createElement('td');
             let tdTitleRus = document.createElement('td');
+            let tdTitle = document.createElement('td');
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
-            tdTitle.innerText = films[i].title ? films[i].title : '';
             tdTitleRus.innerText = films[i].title_ru;
+
+            if (films[i].title && films[i].title !== films[i].title_ru) {
+                let originalSpan = document.createElement('span');
+                originalSpan.className = 'original-title';
+                originalSpan.innerText = films[i].title;
+                tdTitle.appendChild(originalSpan);
+            } else {
+                tdTitle.innerText = ''; 
+            }
+
             tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
             editButton.innerText = 'редактировать';
+            editButton.onclick = function() {
+                editFilm(films[i].id);
+            }
 
             let delButton = document.createElement('button');
             delButton.innerText = 'удалить';
@@ -41,6 +53,7 @@ function fillFilmList() {
     });
 }
 
+
 function deleteFilm(id, title) {
     if(! confirm(`Вы точно хотите удалить фильм "${title}"?`))
         return;
@@ -51,20 +64,34 @@ function deleteFilm(id, title) {
         });
 }
 
+
+function showModal() {
+    document.querySelector('div.modal').style.display = 'block';
+    clearErrors();
+}
+function hideModal() {
+    document.querySelector('div.modal').style.display = 'none';
+}
+
+function cancel () {
+    hideModal();
+}
+
 function addFilm() {
     document.getElementById('id').value = '';
-    document.getElementById('title').value = '';
     document.getElementById('title-ru').value = '';
+    document.getElementById('title').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
+    clearErrors();
     showModal();
 }
 
 function sendFilm() {
     const id = document.getElementById('id').value;
     const film = {
-        title: document.getElementById('title').value,
         title_ru: document.getElementById('title-ru').value,
+        title: document.getElementById('title').value,
         year: document.getElementById('year').value,
         description: document.getElementById('description').value
     }
@@ -82,26 +109,33 @@ function sendFilm() {
             fillFilmList();
             hideModal();
             return {};
+        } else {
+            return resp.json();
         }
-        return resp.json();
     })
     .then(function(errors) {
-        clearErrors();
-
-        if(errors.description) {
-            document.getElementById('description-error').innerText = errors.description;
+        if (errors) {
+            if(errors.description) {
+                document.getElementById('description-error').innerText = errors.description;
+            }
+            if(errors.title_ru) {
+                document.getElementById('title-ru-error').innerText = errors.title_ru;
+            }
+            if(errors.title) {
+                document.getElementById('title-error').innerText = errors.title;
+            }
+            if(errors.year) {
+                document.getElementById('year-error').innerText = errors.year;
+            }
         }
-        if(errors.title_ru) {
-            document.getElementById('title-ru-error').innerText = errors.title_ru;
-        }
-        if(errors.title) {
-            document.getElementById('title-error').innerText = errors.title;
-        }
-        if(errors.year) {
-            document.getElementById('year-error').innerText = errors.year;
-        }
-
     });
+}
+
+function clearErrors() {
+    document.getElementById('description-error').innerText = '';
+    document.getElementById('title-ru-error').innerText = '';
+    document.getElementById('title-error').innerText = '';
+    document.getElementById('year-error').innerText = '';
 }
 
 function editFilm(id) {
@@ -111,8 +145,8 @@ function editFilm(id) {
     })
     .then(function (film) {
         document.getElementById('id').value = film.id;
-        document.getElementById('title').value = film.title || '';
         document.getElementById('title-ru').value = film.title_ru || '';
+        document.getElementById('title').value = film.title || '';
         document.getElementById('year').value = film.year || '';
         document.getElementById('description').value = film.description || '';
         clearErrors();

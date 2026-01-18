@@ -47,6 +47,12 @@
         border-radius: 3px;
         cursor: pointer;
     }
+    
+    .error {
+        color: red;
+        font-size: 12px;
+        margin-top: 5px;
+    }
 </style>
 {% endblock %}
 
@@ -78,24 +84,28 @@
     <div class="modal">
         <input type="hidden" id="id">
         <label>
-        Название фильма на русском:
-        <input type="text" id="title-ru">
+            Название фильма на русском:
+            <input type="text" id="title-ru">
+            <span id="title-ru-error" class="error"></span>
         </label><br>
 
         <label>
-        Название фильма на оригинальном языке
-        <i>(если фильм русский, то оставьте пустым):</i>
-        <input type="text" id="title">
+            Название фильма на оригинальном языке
+            <i>(если фильм русский, то оставьте пустым):</i>
+            <input type="text" id="title">
+            <span id="title-error" class="error"></span>
         </label><br>
 
         <label>
-        Год выпуска:
-        <input type="number" id="year">
+            Год выпуска:
+            <input type="number" id="year">
+            <span id="year-error" class="error"></span>
         </label><br>
 
         <label>
-        Описание:
-        <textarea id="description"></textarea>
+            Описание:
+            <textarea id="description"></textarea>
+            <span id="description-error" class="error"></span>
         </label><br>
 
         <button onclick="sendFilm()">OK</button>
