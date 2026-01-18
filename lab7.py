@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, url_for, redirect, request, make_response, session, current_app, abort
+
 from flask.json import jsonify
 
 lab7 = Blueprint('lab7', __name__)
