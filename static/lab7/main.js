@@ -51,3 +51,55 @@ function deleteFilm(id, title) {
         });
 }
 
+function addFilm() {
+    document.getElementById('id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title-ru').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('description').value = '';
+    showModal();
+}
+
+function sendFilm() {
+    const id = document.getElementById('id').value;
+    const film = {
+        title: document.getElementById('title').value,
+        title_ru: document.getElementById('title-ru').value,
+        year: document.getElementById('year').value,
+        description: document.getElementById('description').value
+    }
+
+    const url = id === '' ? `/lab7/rest-api/films` : `/lab7/rest-api/films/${id}`;
+    const method = id === '' ? 'POST' : "PUT";
+
+    fetch(url, {
+        method: method, 
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(film)
+    })
+    .then(function (resp) {
+        if(resp.ok) {
+            fillFilmList();
+            hideModal();
+            return {};
+        }
+        return resp.json();
+    })
+    .then(function(errors) {
+        clearErrors();
+
+        if(errors.description) {
+            document.getElementById('description-error').innerText = errors.description;
+        }
+        if(errors.title_ru) {
+            document.getElementById('title-ru-error').innerText = errors.title_ru;
+        }
+        if(errors.title) {
+            document.getElementById('title-error').innerText = errors.title;
+        }
+        if(errors.year) {
+            document.getElementById('year-error').innerText = errors.year;
+        }
+
+    });
+}
