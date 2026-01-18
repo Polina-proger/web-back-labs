@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, url_for, redirect, request, make_response, session, current_app, abort
+from flask import Blueprint, render_template, request, abort
 from flask.json import jsonify
+from datetime import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -45,6 +46,56 @@ films = [
     },
 ]
 
+def validate_film_data(film_data):
+    """Валидация данных фильма"""
+    errors = {}
+    
+    # Получаем текущий год
+    current_year = datetime.now().year
+    
+    # Проверка русского названия
+    title_ru = film_data.get('title_ru', '').strip()
+    if not title_ru:
+        errors['title_ru'] = 'Название на русском обязательно'
+    elif len(title_ru) > 200:
+        errors['title_ru'] = 'Название не должно превышать 200 символов'
+    
+    # Проверка оригинального названия
+    title = film_data.get('title', '').strip()
+    if not title:
+        # Если оригинальное название пустое, а русское есть - заполняем русским
+        if title_ru:
+            film_data['title'] = title_ru
+        else:
+            errors['title'] = 'Оригинальное название обязательно, если русское не указано'
+    elif len(title) > 200:
+        errors['title'] = 'Оригинальное название не должно превышать 200 символов'
+    
+    # Проверка года
+    year = film_data.get('year')
+    if not year:
+        errors['year'] = 'Год обязателен'
+    else:
+        try:
+            year_int = int(year)
+            if year_int < 1895:
+                errors['year'] = f'Год должен быть не раньше 1895 (первый фильм)'
+            elif year_int > current_year:
+                errors['year'] = f'Год не может быть больше текущего ({current_year})'
+            # Сохраняем как число
+            film_data['year'] = year_int
+        except (ValueError, TypeError):
+            errors['year'] = 'Год должен быть числом'
+    
+    # Проверка описания
+    description = film_data.get('description', '').strip()
+    if not description:
+        errors['description'] = 'Описание обязательно'
+    elif len(description) > 2000:
+        errors['description'] = 'Описание не должно превышать 2000 символов'
+    
+    return errors, film_data
+
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
     return jsonify(films)
@@ -68,30 +119,10 @@ def del_film(id):
 def put_films(id):
     film_data = request.get_json()
     
-    if not film_data.get('title') and film_data.get('title_ru'):
-        film_data['title'] = film_data['title_ru']
-    
-    errors = {}
-    if not film_data.get('title_ru'):
-        errors['title_ru'] = 'Название на русском обязательно'
-    if not film_data.get('description'):
-        errors['description'] = 'Описание обязательно'
-    
-    year = film_data.get('year')
-    if not year:
-        errors['year'] = 'Год обязателен'
-    else:
-        try:
-            year_int = int(year)
-            if year_int < 1888 or year_int > 2100:
-                errors['year'] = 'Год должен быть числом от 1888 до 2100'
-        except (ValueError, TypeError):
-            errors['year'] = 'Год должен быть числом от 1888 до 2100'
+    errors, film_data = validate_film_data(film_data)
     
     if errors:
         return jsonify(errors), 400
-    
-    film_data['year'] = int(year)
     
     for i, film in enumerate(films):
         if film['id'] == id:
@@ -104,30 +135,10 @@ def put_films(id):
 def add_films():
     film_data = request.get_json()
     
-    if not film_data.get('title') and film_data.get('title_ru'):
-        film_data['title'] = film_data['title_ru']
-    
-    errors = {}
-    if not film_data.get('title_ru'):
-        errors['title_ru'] = 'Название на русском обязательно'
-    if not film_data.get('description'):
-        errors['description'] = 'Описание обязательно'
-    
-    year = film_data.get('year')
-    if not year:
-        errors['year'] = 'Год обязателен'
-    else:
-        try:
-            year_int = int(year)
-            if year_int < 1888 or year_int > 2100:
-                errors['year'] = 'Год должен быть числом от 1888 до 2100'
-        except (ValueError, TypeError):
-            errors['year'] = 'Год должен быть числом от 1888 до 2100'
+    errors, film_data = validate_film_data(film_data)
     
     if errors:
         return jsonify(errors), 400
-    
-    film_data['year'] = int(year)
     
     if films:
         new_id = max(film['id'] for film in films) + 1

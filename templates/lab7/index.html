@@ -11,74 +11,61 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: white;
+        background: white;
         padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 6px 30px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         z-index: 1000;
-        width: 85%;
-        max-width: 600px;
-        border: 2px solid #4a6fa5;
+        width: 500px;
+        max-width: 90%;
+        border: 1px solid #ccc;
     }
     
     table {
-        border-collapse: collapse;
         width: 100%;
-        margin: 25px 0;
+        border-collapse: collapse;
+        margin: 20px 0;
         font-family: Arial, sans-serif;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    table th {
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+    }
+    
+    th {
         background-color: #4a6fa5;
         color: white;
         font-weight: bold;
-        padding: 12px 15px;
-        text-align: left;
-        border: 2px solid #3a5985;
     }
     
-    table td {
-        padding: 10px 15px;
-        border: 2px solid #e0e0e0;
-        vertical-align: top;
-    }
-    
-    table tr:nth-child(even) {
+    tr:nth-child(even) {
         background-color: #f9f9f9;
     }
     
-    table tr:hover {
+    tr:hover {
         background-color: #f0f5ff;
-        transition: background-color 0.3s;
-    }
-    
-    table td i {
-        color: #666;
-        font-style: italic;
     }
     
     button {
         padding: 8px 16px;
         margin: 4px;
-        font-size: 14px;
-        border-radius: 5px;
-        cursor: pointer;
         border: none;
-        transition: all 0.3s;
+        border-radius: 4px;
+        cursor: pointer;
         font-weight: bold;
+        transition: background-color 0.3s;
     }
     
     button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        opacity: 0.9;
     }
     
     button[onclick="addFilm()"] {
         background-color: #4CAF50;
         color: white;
-        padding: 12px 24px;
-        font-size: 16px;
+        padding: 10px 20px;
     }
     
     button[onclick="sendFilm()"] {
@@ -87,16 +74,6 @@
     }
     
     button[onclick="cancel()"] {
-        background-color: #f44336;
-        color: white;
-    }
-    
-    button:contains('редактировать') {
-        background-color: #ff9800;
-        color: white;
-    }
-    
-    button:contains('удалить') {
         background-color: #f44336;
         color: white;
     }
@@ -137,21 +114,31 @@
     textarea:focus {
         border-color: #4a6fa5;
         outline: none;
-        box-shadow: 0 0 5px rgba(74, 111, 165, 0.3);
     }
     
     h1 {
         color: #4a6fa5;
-        text-align: center;
         margin-bottom: 20px;
-        border-bottom: 3px solid #4a6fa5;
-        padding-bottom: 10px;
     }
     
-    .original-title-note {
-        font-size: 12px;
+    .actions button {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+    
+    .actions button:nth-child(1) {
+        background-color: #ff9800;
+        color: white;
+    }
+    
+    .actions button:nth-child(2) {
+        background-color: #f44336;
+        color: white;
+    }
+    
+    .original-title {
+        font-style: italic;
         color: #666;
-        margin-top: 3px;
     }
 </style>
 {% endblock %}
@@ -162,8 +149,8 @@
     <table>
         <thead>
             <tr>
+                <th>Название (рус)</th>
                 <th>Название (оригинал)</th>
-                <th>Название (русское)</th>
                 <th>Год</th>
                 <th>Действия</th>
             </tr>
@@ -171,42 +158,34 @@
         <tbody id="film-list"></tbody>
     </table>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fillFilmList();
-        });
-    </script>
-
     <div style="text-align: center; margin-top: 30px;">
         <button onclick="addFilm()">Добавить фильм</button>
     </div>
 
     <div class="modal">
         <input type="hidden" id="id">
+        
         <label>
-            Название фильма на русском: *
-            <input type="text" id="title-ru" placeholder="Введите название на русском">
+            Название фильма на русском:
+            <input type="text" id="title-ru">
             <span id="title-ru-error" class="error"></span>
         </label>
 
         <label>
             Название фильма на оригинальном языке:
-            <input type="text" id="title" placeholder="Введите оригинальное название">
+            <input type="text" id="title">
             <span id="title-error" class="error"></span>
-            <div class="original-title-note">
-                <i>Если фильм русский или название совпадает, оставьте пустым</i>
-            </div>
         </label>
 
         <label>
-            Год выпуска: *
-            <input type="number" id="year" placeholder="1888-2100" min="1888" max="2100">
+            Год выпуска:
+            <input type="number" id="year">
             <span id="year-error" class="error"></span>
         </label>
 
         <label>
-            Описание: *
-            <textarea id="description" placeholder="Введите описание фильма"></textarea>
+            Описание:
+            <textarea id="description"></textarea>
             <span id="description-error" class="error"></span>
         </label>
 
@@ -215,4 +194,10 @@
             <button onclick="cancel()">Отмена</button>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fillFilmList();
+        });
+    </script>
 {% endblock %}
