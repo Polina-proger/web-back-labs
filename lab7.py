@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, url_for, redirect, request, make_response, session, current_app, abort
-
 from flask.json import jsonify
 
 lab7 = Blueprint('lab7', __name__)
@@ -69,19 +68,30 @@ def del_film(id):
 def put_films(id):
     film_data = request.get_json()
     
-    # Валидация
+    if not film_data.get('title') and film_data.get('title_ru'):
+        film_data['title'] = film_data['title_ru']
+    
     errors = {}
     if not film_data.get('title_ru'):
         errors['title_ru'] = 'Название на русском обязательно'
     if not film_data.get('description'):
         errors['description'] = 'Описание обязательно'
-    if not film_data.get('year'):
+    
+    year = film_data.get('year')
+    if not year:
         errors['year'] = 'Год обязателен'
-    elif not isinstance(film_data.get('year'), int) or film_data['year'] < 1888 or film_data['year'] > 2100:
-        errors['year'] = 'Год должен быть числом от 1888 до 2100'
+    else:
+        try:
+            year_int = int(year)
+            if year_int < 1888 or year_int > 2100:
+                errors['year'] = 'Год должен быть числом от 1888 до 2100'
+        except (ValueError, TypeError):
+            errors['year'] = 'Год должен быть числом от 1888 до 2100'
     
     if errors:
         return jsonify(errors), 400
+    
+    film_data['year'] = int(year)
     
     for i, film in enumerate(films):
         if film['id'] == id:
@@ -94,21 +104,31 @@ def put_films(id):
 def add_films():
     film_data = request.get_json()
     
-    # Валидация
+    if not film_data.get('title') and film_data.get('title_ru'):
+        film_data['title'] = film_data['title_ru']
+    
     errors = {}
     if not film_data.get('title_ru'):
         errors['title_ru'] = 'Название на русском обязательно'
     if not film_data.get('description'):
         errors['description'] = 'Описание обязательно'
-    if not film_data.get('year'):
+    
+    year = film_data.get('year')
+    if not year:
         errors['year'] = 'Год обязателен'
-    elif not isinstance(film_data.get('year'), int) or film_data['year'] < 1888 or film_data['year'] > 2100:
-        errors['year'] = 'Год должен быть числом от 1888 до 2100'
+    else:
+        try:
+            year_int = int(year)
+            if year_int < 1888 or year_int > 2100:
+                errors['year'] = 'Год должен быть числом от 1888 до 2100'
+        except (ValueError, TypeError):
+            errors['year'] = 'Год должен быть числом от 1888 до 2100'
     
     if errors:
         return jsonify(errors), 400
     
-    # Находим максимальный id и увеличиваем на 1
+    film_data['year'] = int(year)
+    
     if films:
         new_id = max(film['id'] for film in films) + 1
     else:

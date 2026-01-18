@@ -12,46 +12,146 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.3);
         z-index: 1000;
-        width: 80%;
-        max-width: 500px;
+        width: 85%;
+        max-width: 600px;
+        border: 2px solid #4a6fa5;
     }
+    
     table {
         border-collapse: collapse;
         width: 100%;
-        margin: 20px 0;
-    }
-    
-    table th, table td {
-        border: 2px solid #ddd;
-        padding: 8px;
-        text-align: left;
+        margin: 25px 0;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
     table th {
-        background-color: #f2f2f2;
+        background-color: #4a6fa5;
+        color: white;
         font-weight: bold;
+        padding: 12px 15px;
+        text-align: left;
+        border: 2px solid #3a5985;
+    }
+    
+    table td {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        vertical-align: top;
+    }
+    
+    table tr:nth-child(even) {
+        background-color: #f9f9f9;
     }
     
     table tr:hover {
-        background-color: #f5f5f5;
+        background-color: #f0f5ff;
+        transition: background-color 0.3s;
+    }
+    
+    table td i {
+        color: #666;
+        font-style: italic;
     }
     
     button {
-        padding: 4px 8px;
-        margin: 2px;
-        font-size: 12px;
-        border-radius: 3px;
+        padding: 8px 16px;
+        margin: 4px;
+        font-size: 14px;
+        border-radius: 5px;
         cursor: pointer;
+        border: none;
+        transition: all 0.3s;
+        font-weight: bold;
+    }
+    
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    button[onclick="addFilm()"] {
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+    
+    button[onclick="sendFilm()"] {
+        background-color: #4a6fa5;
+        color: white;
+    }
+    
+    button[onclick="cancel()"] {
+        background-color: #f44336;
+        color: white;
+    }
+    
+    button:contains('редактировать') {
+        background-color: #ff9800;
+        color: white;
+    }
+    
+    button:contains('удалить') {
+        background-color: #f44336;
+        color: white;
     }
     
     .error {
-        color: red;
-        font-size: 12px;
+        color: #d32f2f;
+        font-size: 13px;
         margin-top: 5px;
+        font-weight: bold;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+    
+    textarea {
+        height: 100px;
+        resize: vertical;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+        border-color: #4a6fa5;
+        outline: none;
+        box-shadow: 0 0 5px rgba(74, 111, 165, 0.3);
+    }
+    
+    h1 {
+        color: #4a6fa5;
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #4a6fa5;
+        padding-bottom: 10px;
+    }
+    
+    .original-title-note {
+        font-size: 12px;
+        color: #666;
+        margin-top: 3px;
     }
 </style>
 {% endblock %}
@@ -62,10 +162,10 @@
     <table>
         <thead>
             <tr>
-                <th>Название (рус)</th>
-                <th>Название (англ)</th>
+                <th>Название (оригинал)</th>
+                <th>Название (русское)</th>
                 <th>Год</th>
-                <th>Действие</th>
+                <th>Действия</th>
             </tr>
         </thead>
         <tbody id="film-list"></tbody>
@@ -77,38 +177,42 @@
         });
     </script>
 
-    <div>
+    <div style="text-align: center; margin-top: 30px;">
         <button onclick="addFilm()">Добавить фильм</button>
     </div>
 
     <div class="modal">
         <input type="hidden" id="id">
         <label>
-            Название фильма на русском:
-            <input type="text" id="title-ru">
+            Название фильма на русском: *
+            <input type="text" id="title-ru" placeholder="Введите название на русском">
             <span id="title-ru-error" class="error"></span>
-        </label><br>
+        </label>
 
         <label>
-            Название фильма на оригинальном языке
-            <i>(если фильм русский, то оставьте пустым):</i>
-            <input type="text" id="title">
+            Название фильма на оригинальном языке:
+            <input type="text" id="title" placeholder="Введите оригинальное название">
             <span id="title-error" class="error"></span>
-        </label><br>
+            <div class="original-title-note">
+                <i>Если фильм русский или название совпадает, оставьте пустым</i>
+            </div>
+        </label>
 
         <label>
-            Год выпуска:
-            <input type="number" id="year">
+            Год выпуска: *
+            <input type="number" id="year" placeholder="1888-2100" min="1888" max="2100">
             <span id="year-error" class="error"></span>
-        </label><br>
+        </label>
 
         <label>
-            Описание:
-            <textarea id="description"></textarea>
+            Описание: *
+            <textarea id="description" placeholder="Введите описание фильма"></textarea>
             <span id="description-error" class="error"></span>
-        </label><br>
+        </label>
 
-        <button onclick="sendFilm()">OK</button>
-        <button onclick="cancel()">Отмена</button>
+        <div style="text-align: right; margin-top: 25px;">
+            <button onclick="sendFilm()">Сохранить</button>
+            <button onclick="cancel()">Отмена</button>
+        </div>
     </div>
 {% endblock %}

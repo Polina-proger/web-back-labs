@@ -10,22 +10,19 @@ function fillFilmList() {
         for(let i = 0; i < films.length; i++) {
             let tr = document.createElement('tr');
 
-            let tdTitleRus = document.createElement('td');
+            // Меняем местами столбцы: оригинальное название первый, русское - второй
             let tdTitle = document.createElement('td');
+            let tdTitleRus = document.createElement('td');
             let tdYear = document.createElement('td');
             let tdActions = document.createElement('td');
 
+            // Оригинальное название (выводим курсивом)
+            tdTitle.innerHTML = `<i>${films[i].title || ''}</i>`;
+            
+            // Русское название (обычным шрифтом)
             tdTitleRus.innerText = films[i].title_ru;
 
-            if (films[i].title && films[i].title !== films[i].title_ru) {
-                let originalSpan = document.createElement('span');
-                originalSpan.className = 'original-title';
-                originalSpan.innerText = films[i].title;
-                tdTitle.appendChild(originalSpan);
-            } else {
-                tdTitle.innerText = ''; 
-            }
-
+            // Год
             tdYear.innerText = films[i].year;
 
             let editButton = document.createElement('button');
@@ -42,9 +39,8 @@ function fillFilmList() {
 
             tdActions.appendChild(editButton);
             tdActions.appendChild(delButton);
-
-            tr.appendChild(tdTitleRus);
             tr.appendChild(tdTitle);
+            tr.appendChild(tdTitleRus);
             tr.appendChild(tdYear);
             tr.appendChild(tdActions);
 
@@ -90,10 +86,10 @@ function addFilm() {
 function sendFilm() {
     const id = document.getElementById('id').value;
     const film = {
-        title_ru: document.getElementById('title-ru').value,
-        title: document.getElementById('title').value,
-        year: document.getElementById('year').value,
-        description: document.getElementById('description').value
+        title_ru: document.getElementById('title-ru').value.trim(),
+        title: document.getElementById('title').value.trim(),
+        year: document.getElementById('year').value.trim(),
+        description: document.getElementById('description').value.trim()
     }
 
     const url = id === '' ? `/lab7/rest-api/films` : `/lab7/rest-api/films/${id}`;
