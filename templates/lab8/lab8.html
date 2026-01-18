@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <div class="knowledge-base">
+        <h1>База знаний</h1>
+
+        <p>
+            <a href="/lab8/articles">Список статей</a> | 
+            <a href="/lab8/create">Создать статью</a> | 
+            
+            <strong>anonymous</strong> | 
+            <a href="/lab8/login">Вход</a> | 
+            <a href="/lab8/register">Регистрация</a>
+        </p>
+
+        <div>
+            <h2>Добро пожаловать в базу знаний!</h2>
+            <p>
+                Для работы с системой необходимо 
+                <a href="/lab8/login">войти</a> или 
+                <a href="/lab8/register">зарегистрироваться</a>.
+            </p>
+            <p>
+                <a href="/lab8/articles">Список статей</a> | 
+                <a href="/lab8/create">Создать статью</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
