@@ -10,22 +10,36 @@
             <a href="/lab8/articles">Список статей</a> | 
             <a href="/lab8/create">Создать статью</a> | 
             
-            <strong>anonymous</strong> | 
-            <a href="/lab8/login">Вход</a> | 
-            <a href="/lab8/register">Регистрация</a>
+            {% if current_user.is_authenticated %}
+                <strong>{{ current_user.login }}</strong> | 
+                <a href="/lab8/logout">Выход</a>
+            {% else %}
+                <strong>anonymous</strong> | 
+                <a href="/lab8/login">Вход</a> | 
+                <a href="/lab8/register">Регистрация</a>
+            {% endif %}
         </p>
 
         <div>
             <h2>Добро пожаловать в базу знаний!</h2>
-            <p>
-                Для работы с системой необходимо 
-                <a href="/lab8/login">войти</a> или 
-                <a href="/lab8/register">зарегистрироваться</a>.
-            </p>
-            <p>
-                <a href="/lab8/articles">Список статей</a> | 
-                <a href="/lab8/create">Создать статью</a>
-            </p>
+            
+            {% if current_user.is_authenticated %}
+                <p>Вы вошли как {{ current_user.login }}</p>
+                <p>
+                    <a href="/lab8/articles">Список статей</a> | 
+                    <a href="/lab8/create">Создать статью</a>
+                </p>
+            {% else %}
+                <p>
+                    Для работы с системой необходимо 
+                    <a href="/lab8/login">войти</a> или 
+                    <a href="/lab8/register">зарегистрироваться</a>.
+                </p>
+                <p>
+                    <a href="/lab8/articles">Список статей</a> | 
+                    <a href="/lab8/create">Создать статью</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

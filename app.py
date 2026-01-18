@@ -1,8 +1,9 @@
 from flask import Flask, url_for, request, redirect, abort, render_template, render_template_string
 import datetime
 import os
-from db.models import db
+from db.models import db, User
 from os import path
+from flask_login import LoginManager
 
 from lab1 import lab1
 from lab2 import lab2
@@ -15,7 +16,7 @@ from lab8 import lab8
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный секрет')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'secret-key-change-this-in-production')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 if app.config['DB_TYPE'] == 'postgres':
@@ -33,6 +34,18 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
 db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'lab8.login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# УДАЛИТЬ эту строку - она вызывает проблему с существующими таблицами
+# with app.app_context():
+#     db.create_all()
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
@@ -208,3 +221,4 @@ access_log = []
 
 if __name__ == '__main__':
     app.run(debug=True)
+    

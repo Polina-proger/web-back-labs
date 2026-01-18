@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+    <h1>Мои статьи</h1>
+    
+    <div style="margin: 20px 0;">
+        <a href="/lab8/create" class="btn btn-primary">Создать новую статью</a>
+        <a href="/lab8/" class="btn btn-secondary">На главную</a>
+    </div>
+    
+    {% if articles %}
+        <div class="articles-list">
+            {% for article in articles %}
+                <div class="article-card" style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                    <h3>{{ article.title }}</h3>
+                    <p>{{ article.article_text[:100] }}{% if article.article_text|length > 100 %}...{% endif %}</p>
+                    <small>Лайков: {{ article.likes }}</small>
+                    
+                    <div style="margin-top: 10px;">
+                        <a href="/lab8/edit/{{ article.id }}" class="btn btn-sm btn-warning">Редактировать</a>
+                        <form action="/lab8/delete/{{ article.id }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить статью?')">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>У вас пока нет статей. <a href="/lab8/create">Создайте первую!</a></p>
+    {% endif %}
+{% endblock %}
