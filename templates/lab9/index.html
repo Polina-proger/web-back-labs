@@ -5,7 +5,7 @@
 {% block main %}
 <style>
     body {
-        background: #0c2461;
+        background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #4a69bd 100%);
         min-height: 100vh;
         margin: 0;
         padding: 20px;
@@ -18,49 +18,118 @@
         margin: 0 auto;
         text-align: center;
         padding: 20px;
-        position: relative;
     }
 
     .title {
         color: #ffffff;
         margin: 0 0 20px;
-        text-shadow: 0 0 10px #3498db;
+        text-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
         font-size: 2.5em;
+        animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+        from { text-shadow: 0 0 10px rgba(52, 152, 219, 0.7), 0 0 20px rgba(52, 152, 219, 0.4); }
+        to { text-shadow: 0 0 20px rgba(52, 152, 219, 0.9), 0 0 30px rgba(52, 152, 219, 0.6); }
+    }
+
+    .auth-panel {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 25px;
+        border-radius: 10px;
+        margin: 0 auto 30px;
+        color: #2c3e50;
+        display: inline-block;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        border: 2px solid #f6b93b;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .auth-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .auth-btn {
+        padding: 8px 20px;
+        background: #0c2461;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s;
+        font-weight: bold;
+    }
+
+    .auth-btn:hover {
+        background: #1a3b8b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .reset-btn {
+        background: #27ae60;
+    }
+
+    .reset-btn:hover {
+        background: #219653;
+    }
+
+    .santa-btn {
+        background: #c0392b;
+    }
+
+    .santa-btn:hover {
+        background: #a93226;
     }
 
     .counters {
-        background: #fff;
+        background: rgba(255, 255, 255, 0.95);
         padding: 20px 40px;
         border-radius: 15px;
-        margin: 30px auto;
-        color: #000;
+        margin: 20px auto;
+        color: #2c3e50;
         display: inline-block;
         font-size: 1.2em;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        border: 2px solid #f6b93b;
+        backdrop-filter: blur(5px);
         max-width: 500px;
+        width: 90%;
     }
 
     .counter-item {
         margin: 10px 0;
         font-weight: bold;
+        font-size: 1.1em;
     }
 
     .limit-note {
         color: #e74c3c;
         font-size: 1em;
-        margin-top: 10px;
+        margin-top: 15px;
         font-weight: bold;
+        padding: 10px;
+        background: rgba(231, 76, 60, 0.1);
+        border-radius: 5px;
     }
 
     .area {
         position: relative;
         height: 600px;
         width: 100%;
-        border: 3px solid #3498db;
-        border-radius: 15px;
-        margin: 20px 0;
+        border: 3px solid #f6b93b;
+        border-radius: 20px;
+        margin: 30px 0;
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2),
+                    0 0 30px rgba(246, 185, 59, 0.3);
     }
 
     .present {
@@ -69,21 +138,24 @@
         width: 100px;
         height: 100px;
         z-index: 2;
-        transition: transform 0.3s;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
     }
 
     .present.opened {
         cursor: default;
+        filter: brightness(0.8);
     }
 
     .present img {
         width: 100%;
         height: 100%;
         object-fit: contain;
+        transition: transform 0.3s;
     }
 
     .present:hover:not(.opened) {
-        transform: scale(1.1);
+        transform: scale(1.15) rotate(5deg);
     }
 
     .popup {
@@ -93,21 +165,34 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0,0,0,0.85);
         z-index: 1000;
         justify-content: center;
         align-items: center;
     }
 
     .popup-content {
-        background: linear-gradient(45deg, #1e3799, #4a69bd);
+        background: #ffffff;
         padding: 40px;
-        border-radius: 15px;
+        border-radius: 20px;
         text-align: center;
         max-width: 500px;
         width: 90%;
-        border: 3px solid #f6b93b;
+        border: 4px solid #f6b93b;
         position: relative;
+        box-shadow: 0 0 50px rgba(246, 185, 59, 0.7);
+        animation: popup-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popup-appear {
+        from {
+            opacity: 0;
+            transform: scale(0.8) translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
     }
 
     .gift-img {
@@ -116,26 +201,67 @@
         margin: 20px auto;
         object-fit: contain;
         display: block;
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
     }
 
     .close-btn {
         position: absolute;
-        top: 10px;
-        right: 15px;
+        top: 15px;
+        right: 20px;
         cursor: pointer;
-        font-size: 28px;
-        color: #fff;
+        font-size: 30px;
+        color: #e74c3c;
+        font-weight: bold;
+        transition: transform 0.3s;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #f6b93b;
+    }
+
+    .close-btn:hover {
+        transform: rotate(90deg) scale(1.1);
+    }
+
+    #greeting-text {
+        color: #2c3e50;
+        font-size: 1.3em;
+        line-height: 1.6;
+        margin: 20px 0;
+        padding: 15px;
         font-weight: bold;
     }
 </style>
 
 <div class="main">
+    <div class="auth-panel">
+        {% if is_authenticated %}
+            <div class="auth-info">
+                <span style="font-size: 1.1em;">👤 {{ username }}</span>
+                <button class="auth-btn" onclick="logout()">Выйти</button>
+                <button class="auth-btn reset-btn" onclick="resetCounters()">🔄 Сбросить</button>
+                <button class="auth-btn santa-btn" onclick="santaAction()">🎅 Дед Мороз</button>
+            </div>
+        {% else %}
+            <div class="auth-info">
+                <span style="font-size: 1.1em;">👤 Гость</span>
+                <button class="auth-btn" onclick="window.location.href='{{ url_for('lab9.login') }}'">
+                    Войти
+                </button>
+                <button class="auth-btn reset-btn" onclick="resetCounters()">🔄 Сбросить</button>
+            </div>
+        {% endif %}
+    </div>
+
     <h1 class="title">🎁 Новогодние Подарки 🎁</h1>
     
     <div class="counters">
         <div class="counter-item">Открыто: <span id="open-count">{{ open_count }}</span></div>
         <div class="counter-item">Осталось: <span id="left-count">{{ left_count }}</span></div>
-        <div class="limit-note">Можно открыть только 3 подарка!</div>
+        <div class="limit-note">⚠️ Можно открыть только 3 подарка!</div>
     </div>
 
     <div class="area" id="area"></div>
@@ -144,9 +270,9 @@
 <div class="popup" id="popup">
     <div class="popup-content">
         <span class="close-btn" onclick="hidePopup()">×</span>
-        <h2 style="color: #f6b93b;">🎉 Поздравляю! 🎉</h2>
+        <h2 style="color: #2c3e50; margin-bottom: 10px;">🎉 С Новым Годом! 🎉</h2>
         <div id="gift-holder"></div>
-        <p id="greeting-text" style="color: #fff; font-size: 1.2em; line-height: 1.5; margin: 20px 0;"></p>
+        <p id="greeting-text"></p>
     </div>
 </div>
 
@@ -167,13 +293,10 @@
             present.dataset.id = idx;
             
             const img = document.createElement('img');
-            if (states[idx]) {
-                img.src = "{{ url_for('static', filename='lab9/opened.png') }}";
-                img.alt = "Открытая коробка";
-            } else {
-                img.src = "{{ url_for('static', filename='lab9/') }}" + boxImages[idx];
-                img.alt = "Закрытая коробка " + (idx + 1);
-            }
+            img.src = states[idx] 
+                ? "{{ url_for('static', filename='lab9/opened.png') }}"
+                : "{{ url_for('static', filename='lab9/') }}" + boxImages[idx];
+            img.alt = states[idx] ? "Открытая коробка" : "Закрытая коробка";
             
             present.appendChild(img);
             area.appendChild(present);
@@ -190,69 +313,110 @@
         
         fetch('{{ url_for("lab9.open_box") }}', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ box_id: boxId })
         })
-        .then(response => {
-            return response.json().then(data => ({ status: response.status, data }));
-        })
+        .then(response => response.json().then(data => ({ status: response.status, data })))
         .then(({ status, data }) => {
-            if (status === 200) {
-                if (data.ok) {
-                    document.getElementById('open-count').textContent = data.open_count;
-                    document.getElementById('left-count').textContent = data.left_count;
-                    
-                    present.classList.add('opened');
-                    const img = present.querySelector('img');
-                    img.src = "{{ url_for('static', filename='lab9/opened.png') }}";
-                    img.alt = "Открытая коробка";
-                    
-                    present.removeEventListener('click', openPresent);
-                    
-                    showPopup(data.greeting, data.gift);
-                } else {
-                    alert(data.msg || 'Неизвестная ошибка');
-                }
+            if (status === 200 && data.ok) {
+                document.getElementById('open-count').textContent = data.open_count;
+                document.getElementById('left-count').textContent = data.left_count;
+                
+                present.classList.add('opened');
+                present.querySelector('img').src = "{{ url_for('static', filename='lab9/opened.png') }}";
+                present.removeEventListener('click', openPresent);
+                
+                showPopup(data.greeting, data.gift);
             } else {
-                alert('Ошибка сервера: ' + (data.msg || 'Неизвестная ошибка'));
+                alert(data.msg || 'Ошибка');
             }
         })
         .catch(error => {
-            console.error('Ошибка при открытии подарка:', error);
-            alert('Ошибка сети. Проверьте подключение к интернету.');
+            console.error('Ошибка:', error);
+            alert('Ошибка сети');
         });
     }
     
     function showPopup(greeting, gift) {
-        const popup = document.getElementById('popup');
-        const text = document.getElementById('greeting-text');
-        const holder = document.getElementById('gift-holder');
-        
-        text.textContent = greeting;
-        holder.innerHTML = `<img src="{{ url_for('static', filename='lab9/gifts/') }}${gift}" class="gift-img" alt="Подарок">`;
-        
-        popup.style.display = 'flex';
+        document.getElementById('greeting-text').textContent = greeting;
+        document.getElementById('gift-holder').innerHTML = 
+            `<img src="{{ url_for('static', filename='lab9/gifts/') }}${gift}" class="gift-img" alt="Подарок">`;
+        document.getElementById('popup').style.display = 'flex';
     }
     
     function hidePopup() {
         document.getElementById('popup').style.display = 'none';
     }
     
+    function resetCounters() {
+        if (confirm('Вы уверены, что хотите сбросить все открытые подарки?')) {
+            fetch('{{ url_for("lab9.reset") }}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert(data.msg);
+                    location.reload();
+                } else {
+                    alert(data.msg || 'Ошибка');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка сети');
+            });
+        }
+    }
+    
+    function logout() {
+        fetch('{{ url_for("lab9.logout") }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.ok) {
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    }
+    
+    function santaAction() {
+        if (confirm('🎅 Дед Мороз наполнит все коробки заново! Продолжить?')) {
+            fetch('{{ url_for("lab9.santa") }}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    alert(data.msg);
+                    location.reload();
+                } else {
+                    alert(data.msg || 'Ошибка');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка сети');
+            });
+        }
+    }
+    
     document.addEventListener('DOMContentLoaded', () => {
         loadPresents();
         
         document.getElementById('popup').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('popup')) {
-                hidePopup();
-            }
+            if (e.target === document.getElementById('popup')) hidePopup();
         });
         
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                hidePopup();
-            }
+            if (e.key === 'Escape') hidePopup();
         });
     });
 </script>

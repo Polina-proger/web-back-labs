@@ -1,7 +1,13 @@
-from flask import Blueprint, render_template, session, jsonify, request
+from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for
 import random
 
 lab9 = Blueprint('lab9', __name__)
+
+USERS = {
+    'admin': '123',
+    'user1': 'pas1',
+    'user2': 'pas2'
+}
 
 greetings = [
     "Пусть сбываются мечты!",
@@ -85,13 +91,39 @@ def main():
     states = session.get('states', [False] * 10)
     open_count = len(session.get('open', []))
     left_count = 10 - sum(states)
+    is_authenticated = session.get('authenticated', False)
+    username = session.get('username', '')
     
     return render_template('lab9/index.html',
                          pos=session['pos'],
                          states=states,
                          boxes=boxes,
                          open_count=open_count,
-                         left_count=left_count)
+                         left_count=left_count,
+                         is_authenticated=is_authenticated,
+                         username=username)
+
+@lab9.route('/lab9/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('lab9/login.html')
+    
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if username in USERS and USERS[username] == password:
+        session['authenticated'] = True
+        session['username'] = username
+        return jsonify({'ok': True, 'msg': 'Авторизация успешна'})
+    else:
+        return jsonify({'ok': False, 'msg': 'Неверное имя пользователя или пароль'})
+
+@lab9.route('/lab9/logout', methods=['POST'])
+def logout():
+    session.pop('authenticated', None)
+    session.pop('username', None)
+    return jsonify({'ok': True, 'msg': 'Выход выполнен'})
 
 @lab9.route('/lab9/open', methods=['POST'])
 def open_box():
@@ -143,6 +175,18 @@ def open_box():
     except Exception as e:
         return jsonify({'ok': False, 'msg': f'Ошибка сервера: {str(e)}'}), 500
 
+@lab9.route('/lab9/reset', methods=['POST'])
+def reset():
+    """Сброс счетчиков для всех пользователей"""
+    session['open'] = []
+    session['states'] = [False] * 10
+    generate_positions()
+    
+    return jsonify({
+        'ok': True,
+        'msg': 'Все подарки сброшены!'
+    })
+
 @lab9.route('/lab9/status')
 def status():
     init_session()
@@ -154,4 +198,20 @@ def status():
     return jsonify({
         'open_count': open_count,
         'left_count': left_count
+    })
+
+@lab9.route('/lab9/santa', methods=['POST'])
+def santa():
+    """Функция Деда Мороза - только для авторизованных пользователей"""
+    if not session.get('authenticated', False):
+        return jsonify({'ok': False, 'msg': 'Только авторизованные пользователи могут использовать эту функцию'}), 403
+    
+    session['open'] = []
+    session['states'] = [False] * 10
+    
+    generate_positions()
+    
+    return jsonify({
+        'ok': True,
+        'msg': 'Дед Мороз наполнил все подарки заново!'
     })
