@@ -1,6 +1,9 @@
 from flask import Flask, url_for, request, redirect, abort, render_template, render_template_string
 import datetime
 import os
+from db.models import db
+from os import path
+
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
@@ -14,6 +17,22 @@ app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный секрет')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
+
+if app.config['DB_TYPE'] == 'postgres':
+    db_name = 'polina_selikhova_orm'
+    db_user = 'polina_selikhova_orm'
+    db_password = '123'
+    host_ip = '127.0.0.1'
+    host_port = 5432
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = \
+        f'postgresql://{db_user}:{db_password}@{host_ip}:{host_port}/{db_name}'
+else:
+    dir_path = path.dirname(path.realpath(__file__))
+    db_path = path.join(dir_path, "polina_selikhova_orm.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
+db.init_app(app)
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
@@ -83,7 +102,7 @@ def internal_server_error(err):
                     <li>Проблемами с базой данных</li>
                     <li>Недостатком ресурсов сервера</li>
                 </ul>
-                <p>Мы уже работаем над устранением проблемы. Пожалуйста, попробуйте позже.</p>
+                <p>Мы уже работают над устранением проблемы. Пожалуйста, попробуйте позже.</p>
             </div>
             <a href="/" class="back-link">Вернуться на главную</a>
             <a href="/lab1" class="back-link" style="margin-left: 10px;">К лабораторной работе</a>
@@ -184,3 +203,8 @@ def not_found(err):
     </body>
 </html>
 ''', 404
+
+access_log = []
+
+if __name__ == '__main__':
+    app.run(debug=True)
