@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from db.models import db, User, Article
+from sqlalchemy import or_
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -63,6 +64,53 @@ def articles():
     user_articles = Article.query.filter_by(user_id=current_user.id).all()
     return render_template('lab8/articles.html', articles=user_articles)
 
+@lab8.route('/lab8/public')
+def public_articles():
+    # Публичные статьи доступны всем, даже неавторизованным
+    public_articles_list = Article.query.filter_by(is_public=True).all()
+    return render_template('lab8/public.html', articles=public_articles_list)
+
+@lab8.route('/lab8/search', methods=['GET', 'POST'])
+def search():
+    if request.method == 'POST':
+        search_query = request.form.get('search_query', '').strip()
+        
+        if not search_query:
+            flash('Введите поисковый запрос', 'error')
+            return redirect('/lab8/search')
+        
+        # Регистронезависимый поиск по названию и тексту
+        search_pattern = f"%{search_query}%"
+        
+        if current_user.is_authenticated:
+            # Для авторизованных: свои статьи + публичные
+            results = Article.query.filter(
+                or_(
+                    Article.user_id == current_user.id,
+                    Article.is_public == True
+                ),
+                or_(
+                    Article.title.ilike(search_pattern),
+                    Article.article_text.ilike(search_pattern)
+                )
+            ).all()
+        else:
+            # Для неавторизованных: только публичные статьи
+            results = Article.query.filter(
+                Article.is_public == True,
+                or_(
+                    Article.title.ilike(search_pattern),
+                    Article.article_text.ilike(search_pattern)
+                )
+            ).all()
+        
+        return render_template('lab8/search.html', 
+                             results=results, 
+                             search_query=search_query,
+                             count=len(results))
+    
+    return render_template('lab8/search.html')
+
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
 @login_required
 def create():
@@ -71,6 +119,7 @@ def create():
     
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = request.form.get('is_public') == 'on'
     
     if not title or not title.strip():
         flash('Введите заголовок!', 'error')
@@ -83,7 +132,8 @@ def create():
         title=title,
         article_text=article_text,
         user_id=current_user.id,
-        likes=0
+        likes=0,
+        is_public=is_public
     )
     
     db.session.add(new_article)
@@ -104,6 +154,7 @@ def edit(article_id):
     
     title = request.form.get('title')
     article_text = request.form.get('article_text')
+    is_public = request.form.get('is_public') == 'on'
     
     if not title or not title.strip():
         flash('Введите заголовок!', 'error')
@@ -114,6 +165,7 @@ def edit(article_id):
     
     article.title = title
     article.article_text = article_text
+    article.is_public = is_public
     db.session.commit()
     
     return redirect('/lab8/articles')

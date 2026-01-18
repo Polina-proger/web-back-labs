@@ -28,6 +28,13 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+
+        <div style="margin-bottom: 15px;">
+            <label>
+                <input type="checkbox" id="is_public" name="is_public">
+                Сделать статью публичной (видна всем пользователям)
+            </label>
+        </div>
         
         <button type="submit" class="btn btn-primary">Создать статью</button>
     </form>

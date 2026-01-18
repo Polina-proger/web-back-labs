@@ -26,8 +26,10 @@
             {% if current_user.is_authenticated %}
                 <p>Вы вошли как {{ current_user.login }}</p>
                 <p>
-                    <a href="/lab8/articles">Список статей</a> | 
-                    <a href="/lab8/create">Создать статью</a>
+                    <a href="/lab8/articles">Мои статьи</a> | 
+                    <a href="/lab8/public">Публичные статьи</a> | 
+                    <a href="/lab8/search">Поиск</a> | 
+                    <a href="/lab8/create">Создать статью</a> | 
                 </p>
             {% else %}
                 <p>
