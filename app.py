@@ -13,6 +13,7 @@ from lab5 import lab5
 from lab6 import lab6
 from lab7 import lab7
 from lab8 import lab8
+from lab9 import lab9
 
 app = Flask(__name__)
 
@@ -43,10 +44,6 @@ login_manager.login_view = 'lab8.login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# УДАЛИТЬ эту строку - она вызывает проблему с существующими таблицами
-# with app.app_context():
-#     db.create_all()
-
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
@@ -55,6 +52,7 @@ app.register_blueprint(lab5)
 app.register_blueprint(lab6)
 app.register_blueprint(lab7)
 app.register_blueprint(lab8)
+app.register_blueprint(lab9)
 
 @app.route("/")
 def start():
