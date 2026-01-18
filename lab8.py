@@ -92,4 +92,9 @@ def test_db():
             "success": False,
             "error": str(e)
         }), 500
-    
+
+@lab8.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/lab8/')
